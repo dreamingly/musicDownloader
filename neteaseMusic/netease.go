@@ -30,7 +30,7 @@ func (net *Netease) getSongId() {
 }
 
 func (net *Netease) getSongUrl() {
-    net.songUrl = "http://music.163.com/api/song/detail/?id=" + (*net).songId + "&ids=%5B" + (*net).songId +"%5D"
+    net.songUrl = "http://music.163.com/api/song/detail/?id=" + net.songId + "&ids=%5B" + net.songId +"%5D"
     page, _ := http.Get((*net).songUrl)
     page1, _ := ioutil.ReadAll(page.Body)
     page.Body.Close()
@@ -39,19 +39,19 @@ func (net *Netease) getSongUrl() {
 }
 
 func (net *Netease) getArtistsDetail() {
-    page, _ := http.Get((*net).songUrl)
+    page, _ := http.Get(net.songUrl)
     page1, _ := ioutil.ReadAll(page.Body)
     page.Body.Close()
     mjson, _ := json.NewJson(page1)
-    (*net).songName = mjson.Get("songs").GetIndex(0).Get("name").MustString()
-    (*net).artistsName = mjson.Get("songs").GetIndex(0).Get("artists").GetIndex(0).Get("name").MustString()
+    net.songName = mjson.Get("songs").GetIndex(0).Get("name").MustString()
+    net.artistsName = mjson.Get("songs").GetIndex(0).Get("artists").GetIndex(0).Get("name").MustString()
 }
 
 func (net *Netease) download() {
-    songStream, _ := http.Get((*net).DownloadUrl)
+    songStream, _ := http.Get(net.DownloadUrl)
     defer songStream.Body.Close()
     body, _ := ioutil.ReadAll(songStream.Body)
-    _ = ioutil.WriteFile((*net).artistsName + "-" + (*net).songName + ".mp3", body, 0644)
+    _ = ioutil.WriteFile((*net).artistsName + "-" + net.songName + ".mp3", body, 0644)
 }
 
 /*
@@ -70,6 +70,6 @@ func do(nts Download) {
 }
 
 func Action(url string) {
-    song := &Netease{songUrl:url}
+    song := &Netease{songUrl: url}
     do(song)
 }
